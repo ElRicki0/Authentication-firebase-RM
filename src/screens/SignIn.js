@@ -19,7 +19,7 @@ const app = initializeApp(firebaseConfig);
 const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication }) => {
     return (
         <View style={styles.authContainer}>
-            <Text style={styles.title}>{isLogin ? 'Inicio sesión' : 'Crear cuenta'}</Text>
+            <Text style={styles.title}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
 
             <TextInput
                 style={styles.input}
@@ -36,12 +36,12 @@ const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogi
                 secureTextEntry
             />
             <View style={styles.buttonContainer}>
-                <Button title={isLogin ? 'Inicia sesión' : 'Crear cuenta'} onPress={handleAuthentication} color="#3498db" />
+                <Button title={isLogin ? 'Sign In' : 'Sign Up'} onPress={handleAuthentication} color="#3498db" />
             </View>
 
             <View style={styles.bottomContainer}>
                 <Text style={styles.toggleText} onPress={() => setIsLogin(!isLogin)}>
-                    {isLogin ? 'Necesitas una cuenta? Créala!' : 'Tienes una cuenta?, inicia sesión'}
+                    {isLogin ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
                 </Text>
             </View>
         </View>
@@ -62,7 +62,7 @@ const AuthenticatedScreen = ({ user, handleAuthentication }) => {
         <View style={styles.authContainer}>
             <Text style={styles.title}>Sus datos son</Text>
             <Text style={styles.emailText}>{user.email}</Text>
-            <Button title="Cerrar" onPress={handleAuthentication} color="#e74c3c" />
+            <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
         </View>
     );
 };
@@ -88,7 +88,7 @@ export default App = () => {
         try {
             if (user) {
                 // If user is already authenticated, log out
-                console.log('Sesión cerrada con éxito!');
+                console.log('User logged out successfully!');
                 await signOut(auth);
             } else {
                 // Sign in or sign up
@@ -96,11 +96,11 @@ export default App = () => {
                     // Sign in
                     await signInWithEmailAndPassword(auth, email, password);
                     navigation.navigate('Home');
-                    console.log('Sesión iniciada con éxito!');
+                    console.log('User signed in successfully!');
                 } else {
                     // Sign up
                     await createUserWithEmailAndPassword(auth, email, password);
-                    console.log('usuario creado con éxito!');
+                    console.log('User created successfully!');
                 }
             }
         } catch (error) {
