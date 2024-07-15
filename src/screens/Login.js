@@ -1,78 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { initializeApp } from '@firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
 import { useNavigation } from '@react-navigation/native';
+import { app } from '../config/firebase';
 
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCx4ivMDFgx2MdQNUWhIZXpvn7mJE8VqGQ",
-    authDomain: "practica-firebase-20220685.firebaseapp.com",
-    projectId: "practica-firebase-20220685",
-    storageBucket: "practica-firebase-20220685.appspot.com",
-    messagingSenderId: "491238602732",
-    appId: "1:491238602732:web:1135347716f48bc7b232c9"
-};
+const Login = ({ navigation }) => {
+    // const Login = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication, navigation }) => {
 
-const app = initializeApp(firebaseConfig);
-
-const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication }) => {
-    return (
-        <View style={styles.authContainer}>
-            <Text style={styles.title}>{isLogin ? 'Inicio sesión' : 'Crear cuenta'}</Text>
-
-            <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Email"
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Password"
-                secureTextEntry
-            />
-            <View style={styles.buttonContainer}>
-                <Button title={isLogin ? 'Inicia sesión' : 'Crear cuenta'} onPress={handleAuthentication} color="#3498db" />
-            </View>
-
-            <View style={styles.bottomContainer}>
-                <Text style={styles.toggleText} onPress={() => setIsLogin(!isLogin)}>
-                    {isLogin ? 'Necesitas una cuenta? Créala!' : 'Tienes una cuenta?, inicia sesión'}
-                </Text>
-            </View>
-        </View>
-    );
-}
-
-const SignIn = async (props) => {
-    try {
-        
-        navigation.navigate('Registrarse');
-    } catch (error) {
-        console.log(error + ' Error en el método ')
-    }
-}
-
-const AuthenticatedScreen = ({ user, handleAuthentication }) => {
-    return (
-        <View style={styles.authContainer}>
-            <Text style={styles.title}>Sus datos son</Text>
-            <Text style={styles.emailText}>{user.email}</Text>
-            <Button title="Cerrar" onPress={handleAuthentication} color="#e74c3c" />
-        </View>
-    );
-};
-
-export default App = () => {
-    const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null); // Track user authentication state
     const [isLogin, setIsLogin] = useState(true);
+
+    // Función para navegar a la pantalla de inicio
+
+    const goToSignIn = () => {
+        navigation.navigate('SignInSc');
+    };
 
     const auth = getAuth(app);
     useEffect(() => {
@@ -86,48 +32,65 @@ export default App = () => {
 
     const handleAuthentication = async () => {
         try {
-            if (user) {
-                // If user is already authenticated, log out
-                console.log('Sesión cerrada con éxito!');
-                await signOut(auth);
+            // if (user) {
+            //     // If user is already authenticated, log out
+            //     console.log('Sesión cerrada con éxito!');
+            //     await signOut(auth);
+            // } else {
+            // Sign in or sign up
+            if (isLogin) {
+                // Sign in
+                await signInWithEmailAndPassword(auth, email, password);
+                navigation.navigate('Home');
+                console.log('Sesión iniciada con éxito!');
             } else {
-                // Sign in or sign up
-                if (isLogin) {
-                    // Sign in
-                    await signInWithEmailAndPassword(auth, email, password);
-                    navigation.navigate('Home');
-                    console.log('Sesión iniciada con éxito!');
-                } else {
-                    // Sign up
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    console.log('usuario creado con éxito!');
-                }
+
+                console.log('error al iniciar sesión!');
             }
+            // }
         } catch (error) {
             console.error('Authentication error:', error.message);
         }
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {user ? (
-                // Show user's email if user is authenticated
-                <AuthenticatedScreen user={user} handleAuthentication={handleAuthentication} />
-            ) : (
-                // Show sign-in or sign-up form if user is not authenticated
-                <AuthScreen
-                    email={email}
-                    setEmail={setEmail}
-                    password={password}
-                    setPassword={setPassword}
-                    isLogin={isLogin}
-                    setIsLogin={setIsLogin}
-                    handleAuthentication={handleAuthentication}
+        <View style={styles.container}>
+            <View style={styles.authContainer}>
+                <Text style={styles.title}>{isLogin ? 'Inicio sesión' : 'Crear cuenta'}</Text>
+
+                <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Email"
+                    autoCapitalize="none"
                 />
-            )}
-        </ScrollView>
+                <TextInput
+                    style={styles.input}
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Password"
+                    secureTextEntry
+                />
+                <View style={styles.buttonContainer}>
+                    <Button title={isLogin ? 'Inicia sesión' : 'Crear cuenta'} onPress={handleAuthentication} color="#3498db" />
+                </View>
+
+                <TouchableOpacity style={styles.bottomContainer} onPress={goToSignIn} >
+                    <Text style={styles.toggleText} >
+                        Necesitas una cuenta? Créala!
+                    </Text>
+                </TouchableOpacity>
+
+            </View>
+        </View>
+
     );
 }
+
+
+export default Login;
+
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,

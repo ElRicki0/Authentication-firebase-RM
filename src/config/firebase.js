@@ -43,4 +43,4 @@ if (storage) {
     console.log('storage initialization failed');
 }
 
-export { database, storage };
+export { database, storage, app};
